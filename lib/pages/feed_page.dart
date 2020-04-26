@@ -11,6 +11,8 @@ class NewsFeedPage extends StatelessWidget {
   NewsFeedPage(this.text);
   final int text;
 
+   
+
   @override
   Widget build(BuildContext context) {
     String title;
@@ -53,12 +55,37 @@ class NewsFeedPage extends StatelessWidget {
                     ),
                     builder: (context , snapshot){
                       if(snapshot.hasError){
-                        return Container(
-                          child: Text('An error has occured. Please re open the application.')
-                        );
+                       Future<void> _error(BuildContext context) async {
+                         return showDialog<void>(
+                           context: context,
+                           barrierDismissible: false,
+                           builder: (BuildContext context){
+                             return AlertDialog(
+                               title: Text('ERROR',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                               ),
+                                content: SingleChildScrollView(child: Text('There was some error fetching the data. Retry or contact owner.')),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: Text('OK'),
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    ),
+                                ],
+                               );
+                           }
+                         );
+                       }
+                       
                       }
                       else{
-                        return snapshot.hasData ? NewsList(news: snapshot.data) : Center(child: CircularProgressIndicator(),);
+                        return snapshot.hasData ? 
+                        NewsList(news: snapshot.data) : 
+                        Center(child: CircularProgressIndicator(
+                          
+                          backgroundColor: Colors.orange[800],
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.orangeAccent)
+                        
+                          ),);
                       }
                     },
                     ),
