@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:news_app/constants.dart';
 import 'package:news_app/models/news.dart';
 Future<List<News>> fetchNews( http.Client client , id ) async{
   String url;
+  
   if(id == 1){
     url = Constant.base_url+
           "top-headlines?country=in&category=business&apiKey="+
@@ -32,8 +34,34 @@ Future<List<News>> fetchNews( http.Client client , id ) async{
           Constant.api_key;
   }
 
-  final response = await client.get(url);
-  return compute(parsenews, response.body);
+  try{
+    final response = await client.get(url);
+    return compute(parsenews, response.body);
+  }
+  catch(e){
+     Future<void> _error(BuildContext context) async {
+                         return showDialog<void>(
+                           context: context,
+                           barrierDismissible: false,
+                           builder: (BuildContext context){
+                             return AlertDialog(
+                               title: Text('ERROR',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                               ),
+                                content: SingleChildScrollView(child: Text('There was some error fetching the data. Retry or contact owner.')),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: Text('OK'),
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    ),
+                                ],
+                               );
+                           }
+                         );
+                       }
+  }
+  
+    
 
   }
 
